@@ -1,0 +1,40 @@
+# import the requests module
+import requests
+
+# set API credentials
+app_id = "5b106a1c"
+app_key = "3cfef2ac3e388c7a2087f79ac94f2e2b"
+
+# set example dietary requirements the user can choose from
+example_dietReq = ["vegetarian", "vegan", "dairy-free", "gluten-free"]
+
+# user input that prompts the user to enter what ingredients they would like in their recipe
+ingredient = input("Enter the ingredients you wish to use: ")
+# split and join functions to enable the selection of more than one ingredient
+includeIngredients = f"q=ingredients={'+'.join(ingredient.split())}"
+
+# user input for dietary requirements
+dietReq = input(f"Choose your dietary requirement(s) from the following options \n{example_dietReq}: ")
+includeDietReq = f"health={dietReq}" if dietReq in example_dietReq else ""
+
+# construct the API request URL
+url = f'https://api.edamam.com/search?{includeIngredients}&app_id={app_id}&app_key={app_key}&{includeDietReq}'
+
+# make the API request
+results = requests.get(url).json()['hits']
+
+# print a message confirming the users search criteria
+print('================================================================================')
+if includeDietReq:
+    print(f"You searched for {dietReq} recipe options, using {ingredient}")
+else:
+    print(f"You searched for recipe options using {ingredient}")
+
+# iterate through the results, printing recipe information including name and url and the number of servings
+for result in results:
+    recipe = result['recipe']
+    print('================================================================================')
+    print(recipe['label'])
+    print(recipe['url'])
+    y = (int(recipe['yield']))
+    print('Makes ' + str(y) + ' servings')
